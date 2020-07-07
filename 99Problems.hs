@@ -1,7 +1,43 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 
-import           Control.Monad.State
+-- Problem 1
+myLast :: [a] -> a
+myLast [] = error "Empty list"
+myLast (x:xs) = if null xs then x else myLast xs
+
+-- Problem 2
+myButLast :: [a] -> a
+myButLast [] = error "Empty list"
+myButLast (a:[]) = error "Only one item"
+myButLast (x:y:xs) = if null xs then x else myButLast (y:xs)
+
+-- Problem 3
+elementAt :: [a] -> Int -> a
+elementAt (x:xs) 1 = x
+elementAt (x:xs) n = elementAt xs (n-1)
+
+-- Problem 4
+myLength :: [a] -> Int 
+myLength = foldr (\a b -> b + 1) 0
+
+-- Problem 5
+myReverse :: [a] -> [a]
+myReverse = foldl (\acc a -> a : acc) []
+
+-- Problem 6
+isPalindrome :: (Eq a) => [a] -> Bool
+isPalindrome xs = foldr (\(x, y) acc -> (x == y) && acc) True (zip xs (reverse xs))
+
+-- Problem 7
+data NestedList a = Elem a | List [NestedList a]
+flatten :: NestedList a -> [a]
+flatten (Elem x) = [x]
+flatten (List nxs) = concat $ foldr (\l acc -> flatten l:acc ) [] nxs
+
+-- Problem 8
+compress :: (Eq a) => [a] -> [a]
+compress = foldr (\x acc -> if (not $ null acc) && x==(head acc) then acc else x:acc) []
 
 -- Problem 14
 dupli :: [a] -> [a]
@@ -80,27 +116,19 @@ primeFactors n =
 
 -- Problem 36
 
--- Problem 40
+-- Problem 41
 goldbachList :: Int -> Int -> [(Int, Int)]
-goldbachList n
+goldbachList a b =
+    let primes = filter isPrime [3..b]
+    in filter (\(m,n) -> m + n < b && m + n > a && m < n ) [(a,b) | a <- primes, b <- primes ]
 
--- Tests
-type Stack = [Int]
-pop :: State Stack Int
-pop = state $ \(x : xs) -> (x, xs)
+-- Binary trees
+data Tree a = Empty | Branch a (Tree a) (Tree a)
+              deriving (Show, Eq)
 
-push :: Int -> State Stack ()
-push a = state $ \xs -> ((), a : xs)
+leaf x = Branch x Empty Empty
 
-stackManip :: State Stack Int
-stackManip = do
-    push 3
-    a <- pop
-    pop
-
-fromStoAandS :: Int -> (String, Int)
-fromStoAandS c | c `mod` 5 == 0 = ("foo", c + 1)
-               | otherwise      = ("bar", c + 1)
-
-stateIntString :: State Int String
-stateIntString = state fromStoAandS
+-- Problem 55
+-- cbalTree :: Int -> [ Tree [Int]]
+-- cbalTree n =  cbalTree' n leaf "x"
+--     where cbalTree' n tree = cbal' (n-1) 
